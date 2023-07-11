@@ -10,6 +10,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+import { useRequest } from "./src/tools/useRequest";
+
 const Stack = createNativeStackNavigator();
 
 function DetailsScreen({ navigation, route }) {
@@ -35,6 +37,30 @@ function DetailsScreen({ navigation, route }) {
   );
 }
 
+function APiResuqest() {
+  const { data, error } = useRequest({
+    url: "/api/data",
+  });
+
+  if (error)
+    return (
+      <View>
+        <Text>failed to load</Text>
+      </View>
+    );
+  if (!data)
+    return (
+      <View>
+        <Text>loading...</Text>
+      </View>
+    );
+  return (
+    <View>
+      <Text>hello {data.name}!</Text>
+    </View>
+  );
+}
+
 function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
@@ -43,6 +69,7 @@ function HomeScreen({ navigation }) {
         title="Go to Details"
         onPress={() => navigation.navigate("details", { a: 1 })}
       />
+      <Button title="Go to api" onPress={() => navigation.navigate("api")} />
       <MyReactNativeForm />
     </View>
   );
@@ -61,7 +88,7 @@ function MyReactNativeForm(props) {
             onBlur={handleBlur("email")}
             value={values.email}
           />
-          <Button onPress={handleSubmit} title="Submit" />
+          <Button onPress={handleSubmit as any} title="Submit" />
         </View>
       )}
     </Formik>
@@ -86,6 +113,7 @@ export default function App() {
               component={DetailsScreen}
               initialParams={{ a: 0 }}
             />
+            <Stack.Screen name="api" component={APiResuqest} />
           </Stack.Navigator>
         </ThemeProvider>
       </SafeAreaProvider>
